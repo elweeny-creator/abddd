@@ -56,11 +56,36 @@ class TestVectorIndex:
     @pytest.fixture
     def sample_chunks(self):
         return [
-            {"chunk_id": "c1", "post_id": "p1", "thread_id": "t1", "text": "Cash-based physical therapy practice transition"},
-            {"chunk_id": "c2", "post_id": "p2", "thread_id": "t1", "text": "Insurance reimbursement rates for outpatient PT"},
-            {"chunk_id": "c3", "post_id": "p3", "thread_id": "t2", "text": "Burnout from high patient volume and documentation burden"},
-            {"chunk_id": "c4", "post_id": "p4", "thread_id": "t2", "text": "Hiring staff PTs and salary benchmarks"},
-            {"chunk_id": "c5", "post_id": "p5", "thread_id": "t3", "text": "WebPT EMR system review and comparison"},
+            {
+                "chunk_id": "c1",
+                "post_id": "p1",
+                "thread_id": "t1",
+                "text": "Cash-based physical therapy practice transition",
+            },
+            {
+                "chunk_id": "c2",
+                "post_id": "p2",
+                "thread_id": "t1",
+                "text": "Insurance reimbursement rates for outpatient PT",
+            },
+            {
+                "chunk_id": "c3",
+                "post_id": "p3",
+                "thread_id": "t2",
+                "text": "Burnout from high patient volume and documentation burden",
+            },
+            {
+                "chunk_id": "c4",
+                "post_id": "p4",
+                "thread_id": "t2",
+                "text": "Hiring staff PTs and salary benchmarks",
+            },
+            {
+                "chunk_id": "c5",
+                "post_id": "p5",
+                "thread_id": "t3",
+                "text": "WebPT EMR system review and comparison",
+            },
         ]
 
     def test_build_index(self, sample_chunks):
@@ -104,39 +129,45 @@ class TestVectorIndex:
 
 class TestKeywordSearch:
     def test_keyword_search(self):
-        posts_df = pd.DataFrame({
-            "post_id": ["p1", "p2", "p3"],
-            "thread_id": ["t1", "t1", "t2"],
-            "text_redacted": [
-                "Cash-based PT practice is growing",
-                "Insurance reimbursement is declining",
-                "Burnout from documentation burden",
-            ],
-        })
+        posts_df = pd.DataFrame(
+            {
+                "post_id": ["p1", "p2", "p3"],
+                "thread_id": ["t1", "t1", "t2"],
+                "text_redacted": [
+                    "Cash-based PT practice is growing",
+                    "Insurance reimbursement is declining",
+                    "Burnout from documentation burden",
+                ],
+            }
+        )
         results = keyword_search("cash based practice", posts_df)
         assert len(results) > 0
         assert results[0]["post_id"] == "p1"
 
     def test_keyword_search_no_results(self):
-        posts_df = pd.DataFrame({
-            "post_id": ["p1"],
-            "thread_id": ["t1"],
-            "text_redacted": ["Physical therapy discussion"],
-        })
+        posts_df = pd.DataFrame(
+            {
+                "post_id": ["p1"],
+                "thread_id": ["t1"],
+                "text_redacted": ["Physical therapy discussion"],
+            }
+        )
         results = keyword_search("xyz789", posts_df)
         assert len(results) == 0
 
 
 class TestHybridSearch:
     def test_hybrid_search(self):
-        posts_df = pd.DataFrame({
-            "post_id": ["p1", "p2"],
-            "thread_id": ["t1", "t2"],
-            "text_redacted": [
-                "Cash-based physical therapy transition",
-                "Burnout from patient overload",
-            ],
-        })
+        posts_df = pd.DataFrame(
+            {
+                "post_id": ["p1", "p2"],
+                "thread_id": ["t1", "t2"],
+                "text_redacted": [
+                    "Cash-based physical therapy transition",
+                    "Burnout from patient overload",
+                ],
+            }
+        )
         # Without semantic (no index)
         results = hybrid_search("cash based therapy", posts_df, index=None)
         assert len(results) > 0

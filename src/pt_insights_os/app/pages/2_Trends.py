@@ -1,9 +1,10 @@
 """Trends page — topics over time, emerging topics, disagreement hotspots."""
 
-import streamlit as st
-import pandas as pd
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pandas as pd
+import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent.parent))
 
@@ -31,7 +32,8 @@ def load_data():
 threads, posts, tags = load_data()
 
 # --- Header ---
-st.markdown("""
+st.markdown(
+    """
 <div style="background: linear-gradient(135deg, #0f3460, #16213e); padding: 1.5rem 2rem;
             border-radius: 14px; color: white; margin-bottom: 1.5rem;">
     <h2 style="margin:0; font-weight:700;">📈 Trends</h2>
@@ -39,7 +41,9 @@ st.markdown("""
         Topic evolution, emerging discussions, and disagreement hotspots
     </p>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # --- Topics Over Time ---
 st.subheader("Topics Over Time")
@@ -85,13 +89,16 @@ if not tags.empty and "created_at" in posts.columns:
             for i, tag in enumerate(list(emerging)[:5]):
                 with cols[i]:
                     count = len(recent[recent["l3_tag"] == tag])
-                    st.markdown(f"""
+                    st.markdown(
+                        f"""
                     <div style="background:#e8f5e8; border-radius:10px; padding:0.75rem;
                                 text-align:center; border:1px solid #c8e6c9;">
                         <div style="font-weight:600; color:#2d7d2d;">{tag.replace('_', ' ')}</div>
                         <div style="font-size:0.75rem; color:#666;">{count} mentions</div>
                     </div>
-                    """, unsafe_allow_html=True)
+                    """,
+                        unsafe_allow_html=True,
+                    )
         else:
             st.info("No emerging topics detected — all topics appear consistently.")
     else:
@@ -115,7 +122,8 @@ if "disagreement_score" in threads.columns:
         disagree = t.get("disagreement_score", 0) or 0
         disagree_pct = int(disagree * 100)
 
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div style="background:white; border-left:4px solid #ff9800; border-radius:8px;
                     padding:1rem; margin:0.5rem 0; box-shadow:0 1px 6px rgba(0,0,0,0.04);">
             <div style="font-weight:600; font-size:0.9rem;">{preview}...</div>
@@ -128,7 +136,9 @@ if "disagreement_score" in threads.columns:
                             border-radius:3px;"></div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 else:
     st.info("Run `make enrich` to compute disagreement scores.")
 
@@ -144,7 +154,8 @@ if "burnout_signal_score" in posts.columns:
         text_col = "text_redacted" if "text_redacted" in burnout_posts.columns else "text"
         st.markdown("**Sample burnout-signal posts:**")
         for _, post in burnout_posts.head(3).iterrows():
-            st.markdown(f"""
+            st.markdown(
+                f"""
             <div style="background:#fff3f3; border-radius:8px; padding:0.75rem; margin:0.25rem 0;
                         border-left:3px solid #c62828;">
                 <div style="font-size:0.85rem;">{str(post[text_col])[:250]}...</div>
@@ -152,4 +163,6 @@ if "burnout_signal_score" in posts.columns:
                     Post {post['post_id']}
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """,
+                unsafe_allow_html=True,
+            )

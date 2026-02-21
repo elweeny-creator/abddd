@@ -1,6 +1,5 @@
 """Vector index — FAISS if available, else DuckDB cosine similarity."""
 
-import json
 import pickle
 import uuid
 from datetime import datetime
@@ -8,9 +7,10 @@ from pathlib import Path
 
 import numpy as np
 
-from pt_insights_os.config import VECTOR_BACKEND, PROJECT_ROOT
+from pt_insights_os.config import PROJECT_ROOT, VECTOR_BACKEND
 from pt_insights_os.logging_config import setup_logging
-from pt_insights_os.search.embed import embed_texts, get_backend as get_embed_backend
+from pt_insights_os.search.embed import embed_texts
+from pt_insights_os.search.embed import get_backend as get_embed_backend
 
 logger = setup_logging()
 
@@ -21,7 +21,8 @@ def _detect_vector_backend() -> str:
     if VECTOR_BACKEND != "auto":
         return VECTOR_BACKEND
     try:
-        import faiss
+        import faiss  # noqa: F401
+
         return "faiss"
     except ImportError:
         return "numpy"
@@ -49,6 +50,7 @@ class VectorIndex:
 
         if self.backend == "faiss":
             import faiss
+
             self._faiss_index = faiss.IndexFlatIP(dim)  # Inner product (cosine with normalized)
             # Normalize for cosine similarity
             norms = np.linalg.norm(self.embeddings, axis=1, keepdims=True)
@@ -106,6 +108,7 @@ class VectorIndex:
 
         if self.backend == "faiss" and self._faiss_index is not None:
             import faiss
+
             faiss_path = save_dir / "search_index.faiss"
             faiss.write_index(self._faiss_index, str(faiss_path))
             data["faiss_path"] = str(faiss_path)
@@ -134,6 +137,7 @@ class VectorIndex:
         if self.backend == "faiss" and "faiss_path" in data:
             try:
                 import faiss
+
                 self._faiss_index = faiss.read_index(data["faiss_path"])
             except (ImportError, Exception):
                 # Fallback to numpy

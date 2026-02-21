@@ -1,9 +1,10 @@
 """Owner's Briefing — generate markdown briefing from filtered slice with citations."""
 
-import streamlit as st
-import pandas as pd
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pandas as pd
+import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent.parent))
 
@@ -32,7 +33,8 @@ def load_data():
 posts, threads, tags = load_data()
 
 # --- Header ---
-st.markdown("""
+st.markdown(
+    """
 <div style="background: linear-gradient(135deg, #0f3460, #16213e); padding: 1.5rem 2rem;
             border-radius: 14px; color: white; margin-bottom: 1.5rem;">
     <h2 style="margin:0; font-weight:700;">📋 Owner's Briefing</h2>
@@ -40,7 +42,9 @@ st.markdown("""
         Generate a markdown briefing from a filtered slice — every bullet cites source records
     </p>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # --- Filter Controls ---
 st.markdown("### Configure Briefing")
@@ -66,21 +70,27 @@ fcol1, fcol2, fcol3 = st.columns(3)
 
 with fcol1:
     if "intent_type" in posts.columns:
-        intents = ["All"] + sorted([s for s in posts["intent_type"].unique() if s and s != "unknown"])
+        intents = ["All"] + sorted(
+            [s for s in posts["intent_type"].unique() if s and s != "unknown"]
+        )
         filter_intent = st.selectbox("Intent Type", intents)
     else:
         filter_intent = "All"
 
 with fcol2:
     if "setting_type" in posts.columns:
-        settings = ["All"] + sorted([s for s in posts["setting_type"].unique() if s and s != "unknown"])
+        settings = ["All"] + sorted(
+            [s for s in posts["setting_type"].unique() if s and s != "unknown"]
+        )
         filter_setting = st.selectbox("Setting Type", settings)
     else:
         filter_setting = "All"
 
 with fcol3:
     if "business_stage" in posts.columns:
-        stages = ["All"] + sorted([s for s in posts["business_stage"].unique() if s and s != "unknown"])
+        stages = ["All"] + sorted(
+            [s for s in posts["business_stage"].unique() if s and s != "unknown"]
+        )
         filter_stage = st.selectbox("Business Stage", stages)
     else:
         filter_stage = "All"
@@ -141,17 +151,22 @@ if st.button("Generate Briefing", type="primary", use_container_width=True):
             is_valid = validate_citations(briefing)
 
             if not is_valid:
-                st.error("CITATION GUARD: Some bullets are missing source IDs. This briefing cannot be generated.")
+                st.error(
+                    "CITATION GUARD: Some bullets are missing source IDs. This briefing cannot be generated."
+                )
             else:
                 # Show success
-                st.success(f"Briefing generated with {len(bullets)} evidence bullets. All citations verified.")
+                st.success(
+                    f"Briefing generated with {len(bullets)} evidence bullets. All citations verified."
+                )
 
                 # Display the briefing
                 st.markdown("---")
                 st.markdown("### Generated Briefing")
 
                 # Styled briefing
-                st.markdown(f"""
+                st.markdown(
+                    f"""
                 <div style="background:white; border-radius:12px; padding:2rem;
                             box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid #eee;">
                     <h2 style="color:#0f3460; margin-top:0;">{briefing_title}</h2>
@@ -161,7 +176,9 @@ if st.button("Generate Briefing", type="primary", use_container_width=True):
                         | All bullets cite source records
                     </p>
                     <hr style="border:none; border-top:1px solid #eee; margin:1rem 0;">
-                """, unsafe_allow_html=True)
+                """,
+                    unsafe_allow_html=True,
+                )
 
                 for b in bullets:
                     citation = f"thread_id:{b['thread_id']}"
@@ -172,13 +189,16 @@ if st.button("Generate Briefing", type="primary", use_container_width=True):
 
                     sentence = b["text"].rsplit("[", 1)[0].strip()
 
-                    st.markdown(f"""
+                    st.markdown(
+                        f"""
                     <div style="background:#fafbfc; border:1px solid #e8e8e8; border-radius:8px;
                                 padding:0.75rem 1rem; margin:0.4rem 0; font-size:0.85rem; line-height:1.5;">
                         <span style="color:#333;">• {sentence}</span>
                         <span style="color:#0f3460; font-weight:600; font-size:0.75rem;">[{citation}]</span>
                     </div>
-                    """, unsafe_allow_html=True)
+                    """,
+                        unsafe_allow_html=True,
+                    )
 
                 st.markdown("</div>", unsafe_allow_html=True)
 
@@ -202,10 +222,13 @@ if st.button("Generate Briefing", type="primary", use_container_width=True):
                         use_container_width=True,
                     )
 else:
-    st.markdown("""
+    st.markdown(
+        """
     <div style="text-align:center; padding:2rem; color:#888;">
         <div style="font-size:2rem; margin-bottom:0.5rem;">📋</div>
         <p>Configure filters above and click <b>Generate Briefing</b>.</p>
         <p style="font-size:0.8rem;">Every bullet will cite its source thread and post IDs.</p>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )

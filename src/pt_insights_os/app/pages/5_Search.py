@@ -1,15 +1,16 @@
 """Search page — keyword + semantic search with evidence and filters."""
 
-import streamlit as st
-import pandas as pd
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pandas as pd
+import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent.parent))
 
 from pt_insights_os.db.duckdb_store import get_connection
 from pt_insights_os.search.index import VectorIndex
-from pt_insights_os.search.retrieve import hybrid_search, keyword_search, format_search_result
+from pt_insights_os.search.retrieve import hybrid_search, keyword_search
 
 st.set_page_config(page_title="Search | PT Insights OS", page_icon="🔎", layout="wide")
 
@@ -41,7 +42,8 @@ posts, tags = load_posts()
 index = load_index()
 
 # --- Header ---
-st.markdown("""
+st.markdown(
+    """
 <div style="background: linear-gradient(135deg, #0f3460, #16213e); padding: 1.5rem 2rem;
             border-radius: 14px; color: white; margin-bottom: 1.5rem;">
     <h2 style="margin:0; font-weight:700;">🔎 Search</h2>
@@ -49,12 +51,16 @@ st.markdown("""
         Keyword + semantic search — every result traces to source records
     </p>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # --- Search Input ---
 col1, col2 = st.columns([3, 1])
 with col1:
-    query = st.text_input("Search query", placeholder="e.g., cash-based transition, burnout, hiring...")
+    query = st.text_input(
+        "Search query", placeholder="e.g., cash-based transition, burnout, hiring..."
+    )
 with col2:
     search_mode = st.selectbox("Mode", ["Hybrid", "Keyword Only", "Semantic Only"])
 
@@ -63,13 +69,17 @@ with st.expander("Advanced Filters", expanded=False):
     fcol1, fcol2, fcol3 = st.columns(3)
     with fcol1:
         if "intent_type" in posts.columns:
-            intents = ["All"] + sorted([s for s in posts["intent_type"].unique() if s and s != "unknown"])
+            intents = ["All"] + sorted(
+                [s for s in posts["intent_type"].unique() if s and s != "unknown"]
+            )
             filter_intent = st.selectbox("Intent", intents, key="search_intent")
         else:
             filter_intent = "All"
     with fcol2:
         if "setting_type" in posts.columns:
-            settings = ["All"] + sorted([s for s in posts["setting_type"].unique() if s and s != "unknown"])
+            settings = ["All"] + sorted(
+                [s for s in posts["setting_type"].unique() if s and s != "unknown"]
+            )
             filter_setting = st.selectbox("Setting", settings, key="search_setting")
         else:
             filter_setting = "All"
@@ -77,7 +87,8 @@ with st.expander("Advanced Filters", expanded=False):
         max_results = st.slider("Max Results", 3, 20, 7, key="search_max")
 
 # --- Quick Filter Chips ---
-st.markdown("""
+st.markdown(
+    """
 <div style="margin: 0.5rem 0 1rem;">
     <span style="display:inline-block; padding:0.3rem 0.7rem; border-radius:16px; font-size:0.75rem;
                  font-weight:500; margin:0.15rem; background:#e8f4fd; color:#0f3460; border:1px solid #0f3460;
@@ -93,7 +104,9 @@ st.markdown("""
     <span style="display:inline-block; padding:0.3rem 0.7rem; border-radius:16px; font-size:0.75rem;
                  font-weight:500; margin:0.15rem; background:#e8eefe; color:#3949ab; border:1px solid #3949ab;">Legal</span>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # --- Search Execution ---
 if query:
@@ -147,7 +160,8 @@ if query:
         # Score bar
         score_pct = int(min(1, max(0, score)) * 100)
 
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div style="background:white; border-radius:10px; padding:1.25rem; margin:0.5rem 0;
                     box-shadow:0 2px 8px rgba(0,0,0,0.05); border-left:4px solid #0f3460;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
@@ -165,12 +179,17 @@ if query:
                             border-radius:2px;"></div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 else:
-    st.markdown("""
+    st.markdown(
+        """
     <div style="text-align:center; padding:3rem; color:#888;">
         <div style="font-size:2rem; margin-bottom:0.5rem;">🔎</div>
         <p>Enter a search query above to find relevant discussions.</p>
         <p style="font-size:0.8rem;">Try: "cash-based transition", "burnout documentation", "hiring salary"</p>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )

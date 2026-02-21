@@ -40,7 +40,11 @@ TAG_RULES: dict[str, list[str]] = {
     "cash_flow": [r"\bcash flow\b", r"\baccounts receivable\b", r"\bA/R\b"],
     # Staffing
     "recruitment": [r"\brecruit(?:ing|ment)?\b", r"\bhir(?:e|ing)\b", r"\bjob\s+post\b"],
-    "compensation_benchmarks": [r"\bsalary\b", r"\bcompensation\b", r"\bpay\s+(?:rate|range|scale)\b"],
+    "compensation_benchmarks": [
+        r"\bsalary\b",
+        r"\bcompensation\b",
+        r"\bpay\s+(?:rate|range|scale)\b",
+    ],
     "productivity_standards": [r"\bproductivity\b", r"\butilization\b", r"\bunits?\s+per\b"],
     "travel_pt": [r"\btravel\s+PT\b", r"\btravel(?:ing)?\s+therap\b"],
     "prn_staffing": [r"\bPRN\b", r"\bper diem\b", r"\bcontract\s+PT\b"],
@@ -92,8 +96,7 @@ TAG_RULES: dict[str, list[str]] = {
 
 # Compile all patterns
 COMPILED_RULES: dict[str, list[re.Pattern]] = {
-    tag: [re.compile(p, re.IGNORECASE) for p in patterns]
-    for tag, patterns in TAG_RULES.items()
+    tag: [re.compile(p, re.IGNORECASE) for p in patterns] for tag, patterns in TAG_RULES.items()
 }
 
 

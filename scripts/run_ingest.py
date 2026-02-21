@@ -166,11 +166,15 @@ def generate_sample_data(raw_dir: Path) -> None:
 def main():
     # Check for data
     supported = {".csv", ".json", ".ndjson", ".jsonl", ".html", ".htm"}
-    has_data = any(
-        f.suffix.lower() in supported
-        for f in RAW_DATA_DIR.iterdir()
-        if not f.name.startswith(".")
-    ) if RAW_DATA_DIR.exists() else False
+    has_data = (
+        any(
+            f.suffix.lower() in supported
+            for f in RAW_DATA_DIR.iterdir()
+            if not f.name.startswith(".")
+        )
+        if RAW_DATA_DIR.exists()
+        else False
+    )
 
     if not has_data:
         logger.info("No raw data found, generating synthetic sample data")

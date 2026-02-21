@@ -1,7 +1,5 @@
 """Retrieval layer — keyword + semantic search with source traceability."""
 
-import re
-
 import pandas as pd
 
 from pt_insights_os.search.index import VectorIndex
@@ -23,14 +21,16 @@ def keyword_search(query: str, posts_df: pd.DataFrame, top_k: int = 10) -> list[
         matches = sum(1 for t in terms if t in text)
         if matches > 0:
             score = matches / len(terms)
-            results.append({
-                "post_id": row["post_id"],
-                "thread_id": row.get("thread_id", ""),
-                "comment_id": row.get("comment_id"),
-                "text": row.get(text_col, ""),
-                "score": round(score, 3),
-                "source": "keyword",
-            })
+            results.append(
+                {
+                    "post_id": row["post_id"],
+                    "thread_id": row.get("thread_id", ""),
+                    "comment_id": row.get("comment_id"),
+                    "text": row.get(text_col, ""),
+                    "score": round(score, 3),
+                    "source": "keyword",
+                }
+            )
 
     results.sort(key=lambda x: x["score"], reverse=True)
     return results[:top_k]

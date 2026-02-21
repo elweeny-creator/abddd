@@ -1,8 +1,9 @@
 """PT Insights OS — Home / Landing Page."""
 
-import streamlit as st
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import streamlit as st
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
@@ -15,7 +16,8 @@ st.set_page_config(
 )
 
 # --- Global CSS for a polished, ADHD-friendly UI ---
-st.markdown("""
+st.markdown(
+    """
 <style>
     /* Import clean font */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -230,12 +232,15 @@ st.markdown("""
     .score-fill-orange { background: linear-gradient(90deg, #c66b00, #ff9800); }
     .score-fill-red { background: linear-gradient(90deg, #c62828, #ef5350); }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 
 def load_data():
     """Load data from DuckDB."""
     from pt_insights_os.db.duckdb_store import get_connection
+
     conn = get_connection()
     try:
         threads = conn.execute("SELECT * FROM threads").fetchdf()
@@ -260,59 +265,82 @@ def main():
     threads, posts, tags, entities = load_data()
 
     # --- Header ---
-    st.markdown("""
+    st.markdown(
+        """
     <div class="main-header">
         <h1>PT Insights OS</h1>
         <p>Community intelligence for the Uncaged Clinician — powered by real conversations, zero hallucination</p>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     # --- KPI Row ---
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="kpi-card">
             <div class="kpi-number">{len(threads)}</div>
             <div class="kpi-label">Threads</div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
     with col2:
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="kpi-card">
             <div class="kpi-number">{len(posts)}</div>
             <div class="kpi-label">Posts</div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
     with col3:
         unique_tags = tags["l1_domain"].nunique() if tags is not None and not tags.empty else 0
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="kpi-card">
             <div class="kpi-number">{unique_tags}</div>
             <div class="kpi-label">Topic Domains</div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
     with col4:
         entity_count = len(entities) if entities is not None else 0
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="kpi-card">
             <div class="kpi-number">{entity_count}</div>
             <div class="kpi-label">Entities Found</div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
     with col5:
-        avg_quality = threads["thread_quality_score"].mean() if "thread_quality_score" in threads.columns else 0
-        st.markdown(f"""
+        avg_quality = (
+            threads["thread_quality_score"].mean()
+            if "thread_quality_score" in threads.columns
+            else 0
+        )
+        st.markdown(
+            f"""
         <div class="kpi-card">
             <div class="kpi-number">{avg_quality:.2f}</div>
             <div class="kpi-label">Avg Quality</div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
     st.markdown("")
 
     # --- Quick Filters ---
     st.markdown('<div class="section-header">Quick Filters</div>', unsafe_allow_html=True)
-    st.markdown("""
+    st.markdown(
+        """
     <div style="margin-bottom: 1rem;">
         <span class="chip chip-ownership">Ownership</span>
         <span class="chip chip-staffing">Staffing</span>
@@ -321,7 +349,9 @@ def main():
         <span class="chip chip-burnout">Burnout</span>
         <span class="chip chip-legal">Legal</span>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     # --- Top Themes ---
     if tags is not None and not tags.empty:
@@ -330,15 +360,20 @@ def main():
         cols = st.columns(min(len(theme_counts), 7))
         for i, (theme, count) in enumerate(theme_counts.items()):
             with cols[i % len(cols)]:
-                st.markdown(f"""
+                st.markdown(
+                    f"""
                 <div class="kpi-card" style="border-left: 3px solid #0f3460;">
                     <div class="kpi-number" style="font-size: 1.4rem;">{count}</div>
                     <div class="kpi-label">{theme}</div>
                 </div>
-                """, unsafe_allow_html=True)
+                """,
+                    unsafe_allow_html=True,
+                )
 
     # --- Top Owner-Relevant Threads ---
-    st.markdown('<div class="section-header">Top Owner-Relevant Threads</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-header">Top Owner-Relevant Threads</div>', unsafe_allow_html=True
+    )
     if "owner_relevance_score" in threads.columns:
         top_threads = threads.nlargest(5, "owner_relevance_score")
     else:
@@ -359,12 +394,15 @@ def main():
             thread_tag_df = tags[tags["post_id"].isin(thread_post_ids)]
             thread_tags = thread_tag_df["l3_tag"].unique()[:5]
 
-        tag_html = " ".join(f'<span class="tag-badge">{t.replace("_", " ")}</span>' for t in thread_tags)
+        tag_html = " ".join(
+            f'<span class="tag-badge">{t.replace("_", " ")}</span>' for t in thread_tags
+        )
 
         quality = thread.get("thread_quality_score", 0) or 0
         quality_pct = int(quality * 100)
 
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="thread-card">
             <div class="title">{first_text}...</div>
             <div class="meta">
@@ -376,7 +414,9 @@ def main():
             <div class="tags">{tag_html}</div>
             <div class="score-bar"><div class="score-fill score-fill-blue" style="width: {quality_pct}%"></div></div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
     # --- Navigation Cards ---
     st.markdown('<div class="section-header">Continue Exploring</div>', unsafe_allow_html=True)
@@ -394,17 +434,22 @@ def main():
     cols = st.columns(4)
     for i, (icon, title, desc) in enumerate(nav_items):
         with cols[i % 4]:
-            st.markdown(f"""
+            st.markdown(
+                f"""
             <div class="nav-card">
                 <div class="icon">{icon}</div>
                 <h3>{title}</h3>
                 <p>{desc}</p>
             </div>
-            """, unsafe_allow_html=True)
+            """,
+                unsafe_allow_html=True,
+            )
 
     # --- Footer ---
     st.markdown("---")
-    st.caption("PT Insights OS | All insights trace to source records | Privacy-first: no raw PII exposed")
+    st.caption(
+        "PT Insights OS | All insights trace to source records | Privacy-first: no raw PII exposed"
+    )
 
 
 if __name__ == "__main__":

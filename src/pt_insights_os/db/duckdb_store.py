@@ -43,9 +43,20 @@ def upsert_posts(conn: duckdb.DuckDBPyConnection, df: pd.DataFrame) -> int:
 
     # Ensure columns match schema
     post_cols = [
-        "post_id", "thread_id", "comment_id", "parent_id", "author_id_hash",
-        "created_at", "text_redacted", "text_raw", "pii_spans", "redaction_version",
-        "reactions", "reply_count", "url", "media_flag",
+        "post_id",
+        "thread_id",
+        "comment_id",
+        "parent_id",
+        "author_id_hash",
+        "created_at",
+        "text_redacted",
+        "text_raw",
+        "pii_spans",
+        "redaction_version",
+        "reactions",
+        "reply_count",
+        "url",
+        "media_flag",
     ]
     for col in post_cols:
         if col not in df.columns:
@@ -129,11 +140,13 @@ def run_qa_check(conn: duckdb.DuckDBPyConnection) -> list[dict]:
         if row["text_redacted"] and email_pattern.search(str(row["text_redacted"])):
             email_leaks.append(row["post_id"])
 
-    checks.append({
-        "check_name": "no_emails_in_redacted",
-        "status": "pass" if not email_leaks else "fail",
-        "details": f"Found {len(email_leaks)} posts with email leaks" if email_leaks else "OK",
-    })
+    checks.append(
+        {
+            "check_name": "no_emails_in_redacted",
+            "status": "pass" if not email_leaks else "fail",
+            "details": f"Found {len(email_leaks)} posts with email leaks" if email_leaks else "OK",
+        }
+    )
 
     # Check 2: No phone numbers in redacted text
     phone_pattern = re.compile(
@@ -148,20 +161,28 @@ def run_qa_check(conn: duckdb.DuckDBPyConnection) -> list[dict]:
             if phone_pattern.search(cleaned):
                 phone_leaks.append(row["post_id"])
 
-    checks.append({
-        "check_name": "no_phones_in_redacted",
-        "status": "pass" if not phone_leaks else "fail",
-        "details": f"Found {len(phone_leaks)} posts with phone leaks" if phone_leaks else "OK",
-    })
+    checks.append(
+        {
+            "check_name": "no_phones_in_redacted",
+            "status": "pass" if not phone_leaks else "fail",
+            "details": f"Found {len(phone_leaks)} posts with phone leaks" if phone_leaks else "OK",
+        }
+    )
 
     # Store results
     import uuid
+
     now = datetime.now()
     for check in checks:
         conn.execute(
             "INSERT INTO qa_audit VALUES (?, ?, ?, ?, ?)",
-            [f"qa_{uuid.uuid4().hex[:8]}", check["check_name"], check["status"],
-             check["details"], now],
+            [
+                f"qa_{uuid.uuid4().hex[:8]}",
+                check["check_name"],
+                check["status"],
+                check["details"],
+                now,
+            ],
         )
 
     return checks

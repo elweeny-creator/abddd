@@ -98,16 +98,18 @@ def tag_text(text: str) -> list[dict]:
     for tag_name, confidence in rule_matches:
         if tag_name in tag_registry and tag_name not in seen_tags:
             info = tag_registry[tag_name]
-            assignments.append({
-                "assignment_id": f"ta_{uuid.uuid4().hex[:12]}",
-                "tag_id": info["tag_id"],
-                "tag_name": tag_name,
-                "l1_domain": info["l1_domain"],
-                "l2_subdomain": info["l2_subdomain"],
-                "l3_tag": info["l3_tag"],
-                "confidence": confidence,
-                "source": "rule",
-            })
+            assignments.append(
+                {
+                    "assignment_id": f"ta_{uuid.uuid4().hex[:12]}",
+                    "tag_id": info["tag_id"],
+                    "tag_name": tag_name,
+                    "l1_domain": info["l1_domain"],
+                    "l2_subdomain": info["l2_subdomain"],
+                    "l3_tag": info["l3_tag"],
+                    "confidence": confidence,
+                    "source": "rule",
+                }
+            )
             seen_tags.add(tag_name)
 
     # 2. Embedding similarity backstop (only if rules found < 2 tags)
@@ -116,16 +118,18 @@ def tag_text(text: str) -> list[dict]:
         for tag_name, confidence in embed_matches:
             if tag_name not in seen_tags:
                 info = tag_registry[tag_name]
-                assignments.append({
-                    "assignment_id": f"ta_{uuid.uuid4().hex[:12]}",
-                    "tag_id": info["tag_id"],
-                    "tag_name": tag_name,
-                    "l1_domain": info["l1_domain"],
-                    "l2_subdomain": info["l2_subdomain"],
-                    "l3_tag": info["l3_tag"],
-                    "confidence": confidence,
-                    "source": "embedding",
-                })
+                assignments.append(
+                    {
+                        "assignment_id": f"ta_{uuid.uuid4().hex[:12]}",
+                        "tag_id": info["tag_id"],
+                        "tag_name": tag_name,
+                        "l1_domain": info["l1_domain"],
+                        "l2_subdomain": info["l2_subdomain"],
+                        "l3_tag": info["l3_tag"],
+                        "confidence": confidence,
+                        "source": "embedding",
+                    }
+                )
                 seen_tags.add(tag_name)
 
     # 3. Optional LLM classifier (OFF by default)

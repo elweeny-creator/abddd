@@ -1,7 +1,6 @@
 """Run enrichment pipeline: taxonomy tagging, metrics, entity extraction."""
 
 import sys
-import uuid
 from pathlib import Path
 
 import pandas as pd
@@ -87,19 +86,21 @@ def main():
     seen_tags = set()
     for tag_name, info in tag_registry.items():
         if info["tag_id"] not in seen_tags:
-            tag_rows.append({
-                "tag_id": info["tag_id"],
-                "l1_domain": info["l1_domain"],
-                "l2_subdomain": info["l2_subdomain"],
-                "l3_tag": info["l3_tag"],
-                "description": None,
-            })
+            tag_rows.append(
+                {
+                    "tag_id": info["tag_id"],
+                    "l1_domain": info["l1_domain"],
+                    "l2_subdomain": info["l2_subdomain"],
+                    "l3_tag": info["l3_tag"],
+                    "description": None,
+                }
+            )
             seen_tags.add(info["tag_id"])
 
     if tag_rows:
-        tags_df = pd.DataFrame(tag_rows)
+        _tags_insert = pd.DataFrame(tag_rows)  # noqa: F841
         conn.execute("DELETE FROM tags")
-        conn.execute("INSERT INTO tags SELECT * FROM tags_df")
+        conn.execute("INSERT INTO tags SELECT * FROM _tags_insert")
         logger.info(f"Loaded {len(tag_rows)} tags into registry")
 
     # Tag each post
@@ -127,9 +128,9 @@ def main():
         all_entities.extend(entities)
 
     if all_entities:
-        ent_df = pd.DataFrame(all_entities)
+        _ent_insert = pd.DataFrame(all_entities)  # noqa: F841
         conn.execute("DELETE FROM entities")
-        conn.execute("INSERT INTO entities SELECT * FROM ent_df")
+        conn.execute("INSERT INTO entities SELECT * FROM _ent_insert")
         logger.info(f"Extracted {len(all_entities)} entities")
 
     # 3. Compute post-level scores + classifications
@@ -143,7 +144,8 @@ def main():
 
     # Update posts with enrichment data
     for _, row in posts_df.iterrows():
-        conn.execute("""
+        conn.execute(
+            """
             UPDATE posts SET
                 actionable_density = ?,
                 burnout_signal_score = ?,
@@ -152,22 +154,25 @@ def main():
                 business_stage = ?,
                 setting_type = ?
             WHERE post_id = ?
-        """, [
-            row.get("actionable_density"),
-            row.get("burnout_signal_score"),
-            row.get("owner_relevance_score"),
-            row.get("intent_type"),
-            row.get("business_stage"),
-            row.get("setting_type"),
-            row["post_id"],
-        ])
+        """,
+            [
+                row.get("actionable_density"),
+                row.get("burnout_signal_score"),
+                row.get("owner_relevance_score"),
+                row.get("intent_type"),
+                row.get("business_stage"),
+                row.get("setting_type"),
+                row["post_id"],
+            ],
+        )
 
     # 4. Compute thread-level scores
     logger.info("Computing thread scores")
     threads_df = compute_thread_scores(posts_df, threads_df)
 
     for _, row in threads_df.iterrows():
-        conn.execute("""
+        conn.execute(
+            """
             UPDATE threads SET
                 thread_quality_score = ?,
                 novelty_score = ?,
@@ -176,15 +181,17 @@ def main():
                 owner_relevance_score = ?,
                 burnout_signal_score = ?
             WHERE thread_id = ?
-        """, [
-            row.get("thread_quality_score"),
-            row.get("novelty_score"),
-            row.get("disagreement_score"),
-            row.get("actionable_density"),
-            row.get("owner_relevance_score"),
-            row.get("burnout_signal_score"),
-            row["thread_id"],
-        ])
+        """,
+            [
+                row.get("thread_quality_score"),
+                row.get("novelty_score"),
+                row.get("disagreement_score"),
+                row.get("actionable_density"),
+                row.get("owner_relevance_score"),
+                row.get("burnout_signal_score"),
+                row["thread_id"],
+            ],
+        )
 
     logger.info("Enrichment pipeline complete")
     conn.close()

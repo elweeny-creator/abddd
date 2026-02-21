@@ -28,7 +28,9 @@ def _score_sentence(sentence: str) -> float:
         score += 0.4
 
     # Contains actionable language
-    if re.search(r"\b(?:should|try|consider|recommend|make sure|key was|tip)\b", sentence, re.IGNORECASE):
+    if re.search(
+        r"\b(?:should|try|consider|recommend|make sure|key was|tip)\b", sentence, re.IGNORECASE
+    ):
         score += 0.3
 
     # Contains specific entities
@@ -64,13 +66,15 @@ def extractive_summary(
         sentences = _split_sentences(text)
         for sentence in sentences:
             score = _score_sentence(sentence)
-            candidates.append({
-                "sentence": sentence,
-                "score": score,
-                "post_id": post_id,
-                "comment_id": comment_id,
-                "thread_id": thread_id,
-            })
+            candidates.append(
+                {
+                    "sentence": sentence,
+                    "score": score,
+                    "post_id": post_id,
+                    "comment_id": comment_id,
+                    "thread_id": thread_id,
+                }
+            )
 
     # Sort by score descending
     candidates.sort(key=lambda x: x["score"], reverse=True)
@@ -97,13 +101,15 @@ def extractive_summary(
             citation_parts.append(f"post_id:{s['post_id']}")
         citation = ", ".join(citation_parts)
 
-        bullets.append({
-            "text": f"{s['sentence']} [{citation}]",
-            "post_id": s["post_id"],
-            "comment_id": s["comment_id"],
-            "thread_id": s["thread_id"],
-            "score": s["score"],
-        })
+        bullets.append(
+            {
+                "text": f"{s['sentence']} [{citation}]",
+                "post_id": s["post_id"],
+                "comment_id": s["comment_id"],
+                "thread_id": s["thread_id"],
+                "score": s["score"],
+            }
+        )
 
     return bullets
 
@@ -126,7 +132,7 @@ def validate_citations(summary_text: str) -> bool:
     Returns True if all bullets have citations, False otherwise.
     """
     lines = summary_text.strip().split("\n")
-    bullet_lines = [l for l in lines if l.strip().startswith("- ")]
+    bullet_lines = [ln for ln in lines if ln.strip().startswith("- ")]
 
     if not bullet_lines:
         return True  # No bullets to validate

@@ -17,18 +17,22 @@ def _detect_backend() -> str:
         return EMBEDDING_BACKEND
 
     try:
-        from sentence_transformers import SentenceTransformer
+        from sentence_transformers import SentenceTransformer  # noqa: F401
+
         return "sentence_transformers"
     except ImportError:
         pass
 
     try:
-        from sklearn.feature_extraction.text import TfidfVectorizer
+        from sklearn.feature_extraction.text import TfidfVectorizer  # noqa: F401
+
         return "tfidf"
     except ImportError:
         pass
 
-    raise RuntimeError("No embedding backend available. Install sentence-transformers or scikit-learn.")
+    raise RuntimeError(
+        "No embedding backend available. Install sentence-transformers or scikit-learn."
+    )
 
 
 def _get_st_embedder():
@@ -36,6 +40,7 @@ def _get_st_embedder():
     global _embedder
     if _embedder is None:
         from sentence_transformers import SentenceTransformer
+
         _embedder = SentenceTransformer(EMBEDDING_MODEL)
         logger.info(f"Loaded sentence-transformers model: {EMBEDDING_MODEL}")
     return _embedder
@@ -46,10 +51,9 @@ class TfidfEmbedder:
 
     def __init__(self):
         from sklearn.feature_extraction.text import TfidfVectorizer
+
         # Use sublinear_tf and no stop_words to keep vocabulary broad for small corpora
-        self.vectorizer = TfidfVectorizer(
-            max_features=384, sublinear_tf=True, ngram_range=(1, 2)
-        )
+        self.vectorizer = TfidfVectorizer(max_features=384, sublinear_tf=True, ngram_range=(1, 2))
         self._fitted = False
 
     def fit(self, texts: list[str]):

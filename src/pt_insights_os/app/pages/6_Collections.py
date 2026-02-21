@@ -1,12 +1,11 @@
 """Collections — save threads into named collections, add notes, export."""
 
+import sys
 import uuid
 from datetime import datetime
+from pathlib import Path
 
 import streamlit as st
-import pandas as pd
-from pathlib import Path
-import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent.parent))
 
@@ -62,7 +61,8 @@ def delete_collection(collection_id: str):
 threads, posts, collections, items = load_data()
 
 # --- Header ---
-st.markdown("""
+st.markdown(
+    """
 <div style="background: linear-gradient(135deg, #0f3460, #16213e); padding: 1.5rem 2rem;
             border-radius: 14px; color: white; margin-bottom: 1.5rem;">
     <h2 style="margin:0; font-weight:700;">📁 Collections</h2>
@@ -70,14 +70,18 @@ st.markdown("""
         Organize threads into named collections — add notes and export
     </p>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # --- Create New Collection ---
 with st.expander("Create New Collection", expanded=False):
     col1, col2 = st.columns([2, 1])
     with col1:
         new_name = st.text_input("Collection Name", placeholder="e.g., Cash-Based Research")
-        new_desc = st.text_input("Description", placeholder="Threads about transitioning to cash pay")
+        new_desc = st.text_input(
+            "Description", placeholder="Threads about transitioning to cash pay"
+        )
     with col2:
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button("Create Collection", type="primary", use_container_width=True):
@@ -92,12 +96,15 @@ st.divider()
 
 # --- Existing Collections ---
 if collections.empty:
-    st.markdown("""
+    st.markdown(
+        """
     <div style="text-align:center; padding:3rem; color:#888;">
         <div style="font-size:2rem; margin-bottom:0.5rem;">📁</div>
         <p>No collections yet. Create one above to start organizing threads.</p>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 else:
     text_col = "text_redacted" if "text_redacted" in posts.columns else "text"
 
@@ -105,14 +112,22 @@ else:
         coll_items = items[items["collection_id"] == coll["collection_id"]]
         item_count = len(coll_items)
 
-        with st.expander(f"**{coll['name']}** ({item_count} threads) — {coll.get('description', '')}", expanded=True):
+        with st.expander(
+            f"**{coll['name']}** ({item_count} threads) — {coll.get('description', '')}",
+            expanded=True,
+        ):
             # Show items
             if not coll_items.empty:
                 for _, item in coll_items.iterrows():
                     thread_posts = posts[posts["thread_id"] == item["thread_id"]]
-                    preview = str(thread_posts.iloc[0][text_col])[:200] if not thread_posts.empty else "No content"
+                    preview = (
+                        str(thread_posts.iloc[0][text_col])[:200]
+                        if not thread_posts.empty
+                        else "No content"
+                    )
 
-                    st.markdown(f"""
+                    st.markdown(
+                        f"""
                     <div style="background:white; border-radius:8px; padding:0.75rem; margin:0.25rem 0;
                                 box-shadow:0 1px 4px rgba(0,0,0,0.04); border-left:3px solid #0f3460;">
                         <div style="font-size:0.85rem; line-height:1.4;">{preview}...</div>
@@ -121,9 +136,11 @@ else:
                             {f' &bull; Note: {item["note"]}' if item.get("note") else ''}
                         </div>
                     </div>
-                    """, unsafe_allow_html=True)
+                    """,
+                        unsafe_allow_html=True,
+                    )
 
-                    if st.button(f"Remove", key=f"rm_{item['item_id']}"):
+                    if st.button("Remove", key=f"rm_{item['item_id']}"):
                         remove_from_collection(item["item_id"])
                         st.rerun()
             else:
@@ -139,11 +156,12 @@ else:
                     prev = str(tp.iloc[0][text_col])[:60] if not tp.empty else "..."
                     thread_options[f"{t['thread_id']} — {prev}..."] = t["thread_id"]
                 selected_thread = st.selectbox(
-                    "Thread", list(thread_options.keys()),
-                    key=f"add_{coll['collection_id']}"
+                    "Thread", list(thread_options.keys()), key=f"add_{coll['collection_id']}"
                 )
             with acol2:
-                note = st.text_input("Note", key=f"note_{coll['collection_id']}", placeholder="Optional note")
+                note = st.text_input(
+                    "Note", key=f"note_{coll['collection_id']}", placeholder="Optional note"
+                )
             with acol3:
                 st.markdown("<br>", unsafe_allow_html=True)
                 if st.button("Add", key=f"addbtn_{coll['collection_id']}", type="primary"):
@@ -163,9 +181,10 @@ else:
                             md += f"{p[text_col]}\n\n"
                             md += f"*Post {p['post_id']}*\n\n---\n\n"
                     st.download_button(
-                        "Download .md", md,
+                        "Download .md",
+                        md,
                         file_name=f"{coll['name'].lower().replace(' ', '_')}.md",
-                        key=f"dl_{coll['collection_id']}"
+                        key=f"dl_{coll['collection_id']}",
                     )
             with ecol2:
                 if st.button("Delete Collection", key=f"del_{coll['collection_id']}"):

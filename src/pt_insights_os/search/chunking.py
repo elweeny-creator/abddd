@@ -39,12 +39,14 @@ def prepare_chunks(posts: list[dict]) -> list[dict]:
 
         chunks = chunk_text(text)
         for i, chunk in enumerate(chunks):
-            all_chunks.append({
-                "chunk_id": f"{post['post_id']}_c{i}",
-                "post_id": post["post_id"],
-                "thread_id": post.get("thread_id", ""),
-                "comment_id": post.get("comment_id"),
-                "text": chunk,
-            })
+            all_chunks.append(
+                {
+                    "chunk_id": f"{post['post_id']}_c{i}",
+                    "post_id": post["post_id"],
+                    "thread_id": post.get("thread_id", ""),
+                    "comment_id": post.get("comment_id"),
+                    "text": chunk,
+                }
+            )
 
     return all_chunks

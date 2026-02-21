@@ -21,28 +21,49 @@ def _has_question(text: str) -> bool:
 
 def _has_actionable_language(text: str) -> bool:
     patterns = [
-        r"\bshould\b", r"\btry\b", r"\bconsider\b", r"\brecommend\b",
-        r"\bstep\s+\d\b", r"\bfirst\b.*\bthen\b", r"\bhow to\b",
-        r"\bmake sure\b", r"\bdon't forget\b", r"\btip[s:]?\b",
+        r"\bshould\b",
+        r"\btry\b",
+        r"\bconsider\b",
+        r"\brecommend\b",
+        r"\bstep\s+\d\b",
+        r"\bfirst\b.*\bthen\b",
+        r"\bhow to\b",
+        r"\bmake sure\b",
+        r"\bdon't forget\b",
+        r"\btip[s:]?\b",
     ]
     return any(re.search(p, text, re.IGNORECASE) for p in patterns) if text else False
 
 
 def _has_burnout_signal(text: str) -> bool:
     patterns = [
-        r"\bburnout\b", r"\bexhaust\w*\b", r"\boverwhelm\w*\b",
-        r"\bstress\w*\b", r"\bquit(?:ting)?\b", r"\bunsustainable\b",
-        r"\bcan't take\b", r"\btoo many patients\b", r"\bdocument(?:ing)?\s+until\b",
+        r"\bburnout\b",
+        r"\bexhaust\w*\b",
+        r"\boverwhelm\w*\b",
+        r"\bstress\w*\b",
+        r"\bquit(?:ting)?\b",
+        r"\bunsustainable\b",
+        r"\bcan't take\b",
+        r"\btoo many patients\b",
+        r"\bdocument(?:ing)?\s+until\b",
     ]
     return any(re.search(p, text, re.IGNORECASE) for p in patterns) if text else False
 
 
 def _has_owner_relevance(text: str) -> bool:
     patterns = [
-        r"\bpractice own\w*\b", r"\bclinic own\w*\b", r"\bmy (?:practice|clinic|business)\b",
-        r"\bstarting a (?:practice|clinic)\b", r"\bowner\b", r"\bentrepreneur\b",
-        r"\brevenue\b", r"\bprofit\b", r"\bcash[- ]?(?:based|pay)\b",
-        r"\bhir(?:e|ing)\b", r"\bscal(?:e|ing)\b", r"\bmulti[- ]?location\b",
+        r"\bpractice own\w*\b",
+        r"\bclinic own\w*\b",
+        r"\bmy (?:practice|clinic|business)\b",
+        r"\bstarting a (?:practice|clinic)\b",
+        r"\bowner\b",
+        r"\bentrepreneur\b",
+        r"\brevenue\b",
+        r"\bprofit\b",
+        r"\bcash[- ]?(?:based|pay)\b",
+        r"\bhir(?:e|ing)\b",
+        r"\bscal(?:e|ing)\b",
+        r"\bmulti[- ]?location\b",
     ]
     return any(re.search(p, text, re.IGNORECASE) for p in patterns) if text else False
 
@@ -87,14 +108,19 @@ def compute_thread_scores(posts_df: pd.DataFrame, threads_df: pd.DataFrame) -> p
 
         # Thread quality = f(post_count, reactions, reply_depth, word_count)
         avg_words = thread_posts[text_col].apply(_word_count).mean()
-        total_reactions = thread_posts["reactions"].sum() if "reactions" in thread_posts.columns else 0
+        total_reactions = (
+            thread_posts["reactions"].sum() if "reactions" in thread_posts.columns else 0
+        )
         post_count = len(thread_posts)
-        quality = min(1.0, round(
-            (min(avg_words, 100) / 100 * 0.3) +
-            (min(total_reactions, 50) / 50 * 0.3) +
-            (min(post_count, 10) / 10 * 0.4),
-            3
-        ))
+        quality = min(
+            1.0,
+            round(
+                (min(avg_words, 100) / 100 * 0.3)
+                + (min(total_reactions, 50) / 50 * 0.3)
+                + (min(post_count, 10) / 10 * 0.4),
+                3,
+            ),
+        )
         threads_df.loc[mask, "thread_quality_score"] = quality
 
         # Novelty: presence of unique/uncommon words (simplified)
@@ -104,10 +130,18 @@ def compute_thread_scores(posts_df: pd.DataFrame, threads_df: pd.DataFrame) -> p
         threads_df.loc[mask, "novelty_score"] = novelty
 
         # Disagreement: presence of contrasting language
-        disagree_patterns = [r"\bbut\b", r"\bhowever\b", r"\bdisagree\b", r"\bcareful\b",
-                           r"\bon the other hand\b", r"\bactually\b", r"\bnot necessarily\b"]
+        disagree_patterns = [
+            r"\bbut\b",
+            r"\bhowever\b",
+            r"\bdisagree\b",
+            r"\bcareful\b",
+            r"\bon the other hand\b",
+            r"\bactually\b",
+            r"\bnot necessarily\b",
+        ]
         disagree_count = sum(
-            1 for text in thread_posts[text_col].fillna("")
+            1
+            for text in thread_posts[text_col].fillna("")
             for p in disagree_patterns
             if re.search(p, text, re.IGNORECASE)
         )

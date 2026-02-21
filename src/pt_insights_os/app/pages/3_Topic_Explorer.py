@@ -1,9 +1,10 @@
 """Topic Explorer — taxonomy tree with faceted filters."""
 
-import streamlit as st
-import pandas as pd
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pandas as pd
+import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent.parent))
 
@@ -32,7 +33,8 @@ def load_data():
 posts, tags = load_data()
 
 # --- Header ---
-st.markdown("""
+st.markdown(
+    """
 <div style="background: linear-gradient(135deg, #0f3460, #16213e); padding: 1.5rem 2rem;
             border-radius: 14px; color: white; margin-bottom: 1.5rem;">
     <h2 style="margin:0; font-weight:700;">🏷️ Topic Explorer</h2>
@@ -40,7 +42,9 @@ st.markdown("""
         Browse the PT taxonomy tree with faceted filters
     </p>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 if tags.empty:
     st.warning("No tags available. Run `make enrich` to generate topic tags.")
@@ -109,7 +113,10 @@ with col1:
     for domain_id, domain in taxonomy["domains"].items():
         domain_count = len(filtered_tags[filtered_tags["l1_domain"] == domain["label"]])
         if domain_count > 0 or selected_domain == "All":
-            with st.expander(f"**{domain['label']}** ({domain_count})", expanded=(selected_domain == domain["label"])):
+            with st.expander(
+                f"**{domain['label']}** ({domain_count})",
+                expanded=(selected_domain == domain["label"]),
+            ):
                 for sub_id, sub in domain["subdomains"].items():
                     sub_count = len(filtered_tags[filtered_tags["l2_subdomain"] == sub["label"]])
                     if sub_count > 0:
@@ -117,7 +124,9 @@ with col1:
                         for tag in sub["tags"]:
                             tag_count = len(filtered_tags[filtered_tags["l3_tag"] == tag])
                             if tag_count > 0:
-                                st.markdown(f"&nbsp;&nbsp;&nbsp;&nbsp;🏷️ {tag.replace('_', ' ')} ({tag_count})")
+                                st.markdown(
+                                    f"&nbsp;&nbsp;&nbsp;&nbsp;🏷️ {tag.replace('_', ' ')} ({tag_count})"
+                                )
 
 with col2:
     st.markdown(f"### Matching Posts ({len(filtered_posts)})")
@@ -141,7 +150,8 @@ with col2:
             meta_parts = [p for p in [intent, stage, setting] if p and p != "unknown"]
             meta_str = " &bull; ".join(meta_parts)
 
-            st.markdown(f"""
+            st.markdown(
+                f"""
             <div style="background:white; border-radius:10px; padding:1rem; margin:0.5rem 0;
                         box-shadow:0 1px 6px rgba(0,0,0,0.04); border-left:3px solid #0f3460;">
                 <div style="font-size:0.85rem; line-height:1.5;">{str(post[text_col])[:300]}...</div>
@@ -151,7 +161,9 @@ with col2:
                     {' &bull; ' + meta_str if meta_str else ''}
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """,
+                unsafe_allow_html=True,
+            )
 
         if len(filtered_posts) > 7:
             st.caption(f"Showing 7 of {len(filtered_posts)} matching posts")

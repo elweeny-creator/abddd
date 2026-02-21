@@ -1,9 +1,10 @@
 """Overview page — KPIs, top themes, top owner-relevant threads."""
 
-import streamlit as st
-import pandas as pd
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pandas as pd
+import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent.parent))
 
@@ -35,7 +36,8 @@ def load_data():
 threads, posts, tags, entities = load_data()
 
 # --- Header ---
-st.markdown("""
+st.markdown(
+    """
 <div style="background: linear-gradient(135deg, #0f3460, #16213e); padding: 1.5rem 2rem;
             border-radius: 14px; color: white; margin-bottom: 1.5rem;">
     <h2 style="margin:0; font-weight:700;">📊 Overview</h2>
@@ -43,7 +45,9 @@ st.markdown("""
         High-level view of community activity, themes, and quality metrics
     </p>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # --- KPI Metrics ---
 col1, col2, col3, col4 = st.columns(4)
@@ -52,7 +56,9 @@ with col1:
 with col2:
     st.metric("Total Posts", len(posts))
 with col3:
-    avg_q = threads["thread_quality_score"].mean() if "thread_quality_score" in threads.columns else 0
+    avg_q = (
+        threads["thread_quality_score"].mean() if "thread_quality_score" in threads.columns else 0
+    )
     st.metric("Avg Thread Quality", f"{avg_q:.2f}" if avg_q else "N/A")
 with col4:
     burnout_count = 0
@@ -65,17 +71,25 @@ st.divider()
 # --- Top Themes ---
 st.subheader("Top Themes")
 if not tags.empty:
-    theme_counts = tags.groupby("l1_domain").size().reset_index(name="count").sort_values("count", ascending=False)
+    theme_counts = (
+        tags.groupby("l1_domain")
+        .size()
+        .reset_index(name="count")
+        .sort_values("count", ascending=False)
+    )
     cols = st.columns(min(len(theme_counts), 5))
     for i, (_, row) in enumerate(theme_counts.head(5).iterrows()):
         with cols[i]:
-            st.markdown(f"""
+            st.markdown(
+                f"""
             <div style="background:white; border-radius:10px; padding:1rem; text-align:center;
                         box-shadow:0 2px 8px rgba(0,0,0,0.05); border-top:3px solid #0f3460;">
                 <div style="font-size:1.5rem; font-weight:700; color:#0f3460;">{row['count']}</div>
                 <div style="font-size:0.75rem; color:#888; text-transform:uppercase;">{row['l1_domain']}</div>
             </div>
-            """, unsafe_allow_html=True)
+            """,
+                unsafe_allow_html=True,
+            )
 
     # Bar chart
     st.bar_chart(theme_counts.set_index("l1_domain")["count"])
@@ -109,7 +123,8 @@ if "owner_relevance_score" in threads.columns:
         preview = str(thread_posts.iloc[0][text_col])[:200] if not thread_posts.empty else ""
 
         with st.container():
-            st.markdown(f"""
+            st.markdown(
+                f"""
             <div style="background:white; border-left:4px solid #0f3460; border-radius:8px;
                         padding:1rem; margin:0.5rem 0; box-shadow:0 1px 6px rgba(0,0,0,0.04);">
                 <div style="font-weight:600; font-size:0.9rem; color:#1a1a2e;">{preview}...</div>
@@ -119,7 +134,9 @@ if "owner_relevance_score" in threads.columns:
                     &bull; Owner Relevance: {t.get('owner_relevance_score', 0):.2f}
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """,
+                unsafe_allow_html=True,
+            )
 else:
     st.info("Run `make enrich` to compute thread scores.")
 
@@ -127,10 +144,14 @@ else:
 st.divider()
 st.subheader("Entities Mentioned")
 if not entities.empty:
-    entity_summary = entities.groupby("entity_type").agg(
-        count=("entity_id", "size"),
-        examples=("entity_value", lambda x: ", ".join(x.unique()[:5]))
-    ).reset_index()
+    entity_summary = (
+        entities.groupby("entity_type")
+        .agg(
+            count=("entity_id", "size"),
+            examples=("entity_value", lambda x: ", ".join(x.unique()[:5])),
+        )
+        .reset_index()
+    )
     for _, row in entity_summary.iterrows():
         st.markdown(f"**{row['entity_type']}** ({row['count']}): {row['examples']}")
 else:

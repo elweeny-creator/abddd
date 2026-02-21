@@ -1,6 +1,6 @@
 """Tests for enrichment: taxonomy tagging, metrics, entity extraction."""
 
-import pytest
+import pandas as pd
 
 from pt_insights_os.enrich.entities import (
     classify_business_stage,
@@ -11,8 +11,6 @@ from pt_insights_os.enrich.entities import (
 from pt_insights_os.enrich.metrics import compute_post_scores, compute_thread_scores
 from pt_insights_os.taxonomy.rules import match_rules
 from pt_insights_os.taxonomy.tagger import build_tag_registry, tag_text
-
-import pandas as pd
 
 
 class TestTaxonomy:
@@ -130,14 +128,16 @@ class TestClassifiers:
 
 class TestMetrics:
     def test_compute_post_scores(self):
-        df = pd.DataFrame({
-            "post_id": ["p1", "p2"],
-            "text_redacted": [
-                "You should consider trying cash pay. It really helped us grow revenue by 40%.",
-                "Just frustrated with burnout and overwhelming patient loads.",
-            ],
-            "reactions": [10, 5],
-        })
+        df = pd.DataFrame(
+            {
+                "post_id": ["p1", "p2"],
+                "text_redacted": [
+                    "You should consider trying cash pay. It really helped us grow revenue by 40%.",
+                    "Just frustrated with burnout and overwhelming patient loads.",
+                ],
+                "reactions": [10, 5],
+            }
+        )
         result = compute_post_scores(df)
         assert "actionable_density" in result.columns
         assert "burnout_signal_score" in result.columns
@@ -145,19 +145,23 @@ class TestMetrics:
         assert result.iloc[1]["burnout_signal_score"] == 1.0
 
     def test_compute_thread_scores(self):
-        posts_df = pd.DataFrame({
-            "post_id": ["p1", "p2"],
-            "thread_id": ["t1", "t1"],
-            "text_redacted": ["Great advice here", "However, be careful with this approach"],
-            "reactions": [10, 5],
-            "actionable_density": [0.5, 0.3],
-            "owner_relevance_score": [1.0, 0.0],
-            "burnout_signal_score": [0.0, 0.0],
-        })
-        threads_df = pd.DataFrame({
-            "thread_id": ["t1"],
-            "post_count": [2],
-        })
+        posts_df = pd.DataFrame(
+            {
+                "post_id": ["p1", "p2"],
+                "thread_id": ["t1", "t1"],
+                "text_redacted": ["Great advice here", "However, be careful with this approach"],
+                "reactions": [10, 5],
+                "actionable_density": [0.5, 0.3],
+                "owner_relevance_score": [1.0, 0.0],
+                "burnout_signal_score": [0.0, 0.0],
+            }
+        )
+        threads_df = pd.DataFrame(
+            {
+                "thread_id": ["t1"],
+                "post_count": [2],
+            }
+        )
         result = compute_thread_scores(posts_df, threads_df)
         assert "thread_quality_score" in result.columns
         assert "disagreement_score" in result.columns

@@ -1,13 +1,10 @@
 """Citation guard tests — every summary bullet MUST have source IDs."""
 
-import pytest
-
 from pt_insights_os.enrich.summarize import (
     extractive_summary,
     format_briefing,
     validate_citations,
 )
-
 
 SAMPLE_POSTS = [
     {
@@ -115,9 +112,9 @@ class TestCitationGuardIntegration:
         briefing = format_briefing("Integration Test", bullets)
 
         # THE CRITICAL ASSERTION: briefings fail if any bullet lacks source IDs
-        assert validate_citations(briefing), (
-            f"CITATION GUARD FAILURE: Briefing contains bullets without source IDs:\n{briefing}"
-        )
+        assert validate_citations(
+            briefing
+        ), f"CITATION GUARD FAILURE: Briefing contains bullets without source IDs:\n{briefing}"
 
     def test_single_post_has_citation(self):
         bullets = extractive_summary([SAMPLE_POSTS[0]], max_bullets=3)

@@ -1,14 +1,15 @@
 """Thread Deep Dive — full redacted thread with summary, citations, tags, metrics."""
 
-import streamlit as st
-import pandas as pd
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pandas as pd
+import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent.parent))
 
 from pt_insights_os.db.duckdb_store import get_connection
-from pt_insights_os.enrich.summarize import extractive_summary, format_briefing
+from pt_insights_os.enrich.summarize import extractive_summary
 
 st.set_page_config(page_title="Thread Deep Dive | PT Insights OS", page_icon="🔍", layout="wide")
 
@@ -36,7 +37,8 @@ def load_data():
 threads, posts, tags, entities = load_data()
 
 # --- Header ---
-st.markdown("""
+st.markdown(
+    """
 <div style="background: linear-gradient(135deg, #0f3460, #16213e); padding: 1.5rem 2rem;
             border-radius: 14px; color: white; margin-bottom: 1.5rem;">
     <h2 style="margin:0; font-weight:700;">🔍 Thread Deep Dive</h2>
@@ -44,7 +46,9 @@ st.markdown("""
         Examine a thread with redacted evidence, tags, metrics, and cited summary
     </p>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 if threads.empty:
     st.warning("No threads available. Run `make ingest` first.")
@@ -86,7 +90,8 @@ for score_key, label, col, color in score_cols:
     with col:
         val = thread.get(score_key, 0) or 0
         pct = int(float(val) * 100)
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div style="background:white; border-radius:10px; padding:0.75rem; text-align:center;
                     box-shadow:0 1px 6px rgba(0,0,0,0.04);">
             <div style="font-size:1.2rem; font-weight:700; color:{color};">{float(val):.2f}</div>
@@ -95,7 +100,9 @@ for score_key, label, col, color in score_cols:
                 <div style="width:{pct}%; height:100%; background:{color}; border-radius:2px;"></div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
 st.markdown("")
 
@@ -110,7 +117,7 @@ if not tags.empty:
         for _, t in unique_tags.iterrows():
             tag_html += (
                 f'<span style="display:inline-block; background:#f0f4ff; color:#0f3460; '
-                f'padding:0.2rem 0.6rem; border-radius:8px; font-size:0.75rem; margin:0.1rem; '
+                f"padding:0.2rem 0.6rem; border-radius:8px; font-size:0.75rem; margin:0.1rem; "
                 f'font-weight:500;">{t["l1_domain"]} > {t["l3_tag"].replace("_", " ")}</span>'
             )
         st.markdown(tag_html, unsafe_allow_html=True)
@@ -121,10 +128,15 @@ if not entities.empty:
     if not thread_entities.empty:
         st.markdown("**Entities:**")
         ent_html = ""
-        for _, e in thread_entities.drop_duplicates(subset=["entity_type", "entity_value"]).iterrows():
+        for _, e in thread_entities.drop_duplicates(
+            subset=["entity_type", "entity_value"]
+        ).iterrows():
             colors = {
-                "INSURER": "#e8f5e8", "EMR": "#e8f4fd", "CPT_CODE": "#fef3e8",
-                "CREDENTIAL": "#f3e8fe", "REGULATION": "#fee8e8",
+                "INSURER": "#e8f5e8",
+                "EMR": "#e8f4fd",
+                "CPT_CODE": "#fef3e8",
+                "CREDENTIAL": "#f3e8fe",
+                "REGULATION": "#fee8e8",
             }
             bg = colors.get(e["entity_type"], "#f0f0f0")
             ent_html += (
@@ -151,13 +163,16 @@ if bullets:
         else:
             citation += f", post_id:{b['post_id']}"
 
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div style="background:#fafbfc; border:1px solid #e8e8e8; border-radius:8px;
                     padding:0.75rem 1rem; margin:0.4rem 0; font-size:0.85rem; line-height:1.5;">
             {b['text'].rsplit('[', 1)[0].strip()}
             <span style="color:#0f3460; font-weight:500; font-size:0.75rem;">[{citation}]</span>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 else:
     st.info("No evidence bullets could be extracted.")
 
@@ -181,8 +196,11 @@ for _, post in thread_posts.iterrows():
     if intent and intent != "unknown":
         meta_parts.append(intent)
 
-    with st.expander(f"{'↳ ' if is_reply else ''}{str(post[text_col])[:100]}...", expanded=not is_reply):
-        st.markdown(f"""
+    with st.expander(
+        f"{'↳ ' if is_reply else ''}{str(post[text_col])[:100]}...", expanded=not is_reply
+    ):
+        st.markdown(
+            f"""
         <div style="{indent} background:white; border-left:3px solid {border_color};
                     border-radius:8px; padding:1rem;">
             <div style="font-size:0.85rem; line-height:1.6;">{post[text_col]}</div>
@@ -191,4 +209,6 @@ for _, post in thread_posts.iterrows():
                 &bull; Reactions: {int(post.get('reactions', 0) or 0)}
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )

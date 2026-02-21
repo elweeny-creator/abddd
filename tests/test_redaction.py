@@ -3,7 +3,6 @@
 import json
 
 import pandas as pd
-import pytest
 
 from pt_insights_os.privacy.redact import find_pii_spans, redact_dataframe, redact_text
 

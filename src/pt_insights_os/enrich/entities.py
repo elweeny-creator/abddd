@@ -3,7 +3,6 @@
 import re
 import uuid
 
-
 # Named entity patterns
 ENTITY_PATTERNS = {
     "INSURER": [
@@ -79,13 +78,15 @@ def extract_entities(text: str, post_id: str) -> list[dict]:
                 key = (entity_type, value.lower())
                 if key not in seen:
                     seen.add(key)
-                    entities.append({
-                        "entity_id": f"ent_{uuid.uuid4().hex[:12]}",
-                        "post_id": post_id,
-                        "entity_type": entity_type,
-                        "entity_value": value,
-                        "confidence": 1.0,
-                    })
+                    entities.append(
+                        {
+                            "entity_id": f"ent_{uuid.uuid4().hex[:12]}",
+                            "post_id": post_id,
+                            "entity_type": entity_type,
+                            "entity_value": value,
+                            "confidence": 1.0,
+                        }
+                    )
 
     return entities
 
@@ -97,11 +98,16 @@ def classify_intent(text: str) -> str:
 
     text_lower = text.lower()
 
-    if re.search(r"\?", text) and re.search(r"\b(?:how|what|where|when|who|has anyone|does anyone|should I)\b", text_lower):
+    if re.search(r"\?", text) and re.search(
+        r"\b(?:how|what|where|when|who|has anyone|does anyone|should I)\b", text_lower
+    ):
         return "question"
     if re.search(r"\b(?:tip|advice|recommend|suggest|consider|should|try)\b", text_lower):
         return "advice"
-    if re.search(r"\b(?:I did|I made|I went|my experience|we switched|we dropped|made the switch|I switched)\b", text_lower):
+    if re.search(
+        r"\b(?:I did|I made|I went|my experience|we switched|we dropped|made the switch|I switched)\b",
+        text_lower,
+    ):
         return "experience_share"
     if re.search(r"\b(?:hiring|looking for|job|position|opening)\b", text_lower):
         return "job_posting"
@@ -120,7 +126,9 @@ def classify_business_stage(text: str) -> str:
 
     text_lower = text.lower()
 
-    if re.search(r"\b(?:starting|new|launch|open(?:ing)?|first year|planning to start)\b", text_lower):
+    if re.search(
+        r"\b(?:starting|new|launch|open(?:ing)?|first year|planning to start)\b", text_lower
+    ):
         return "startup"
     if re.search(r"\b(?:growing|expand|scale|second location|adding staff)\b", text_lower):
         return "growth"
