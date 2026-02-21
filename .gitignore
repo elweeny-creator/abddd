@@ -1,0 +1,33 @@
+# Data directories
+data/raw/
+data/processed/
+data/warehouse/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environment
+.env
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Models / indexes
+*.faiss
+*.pkl
