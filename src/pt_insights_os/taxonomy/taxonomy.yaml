@@ -1,0 +1,288 @@
+# PT Industry Taxonomy — 3-level hierarchy
+# L1: Domain → L2: Subdomain → L3: Actionable Tags
+
+domains:
+  clinical_practice:
+    label: Clinical Practice
+    subdomains:
+      treatment_approaches:
+        label: Treatment Approaches
+        tags:
+          - manual_therapy
+          - exercise_prescription
+          - modalities
+          - dry_needling
+          - telehealth_delivery
+      patient_outcomes:
+        label: Patient Outcomes
+        tags:
+          - outcome_measures
+          - patient_satisfaction
+          - functional_improvement
+          - discharge_planning
+      specialization:
+        label: Specialization
+        tags:
+          - orthopedic
+          - neurological
+          - pediatric
+          - geriatric
+          - sports_medicine
+          - pelvic_health
+          - hand_therapy
+
+  reimbursement:
+    label: Reimbursement
+    subdomains:
+      insurance_contracting:
+        label: Insurance Contracting
+        tags:
+          - rate_negotiation
+          - contract_terms
+          - payer_mix
+          - fee_schedule
+      billing_coding:
+        label: Billing & Coding
+        tags:
+          - cpt_codes
+          - modifier_usage
+          - claim_denials
+          - authorization
+          - billing_compliance
+      payer_relations:
+        label: Payer Relations
+        tags:
+          - medicare
+          - medicaid
+          - commercial_insurance
+          - workers_comp
+          - auto_insurance
+
+  sales_marketing:
+    label: Sales & Marketing
+    subdomains:
+      patient_acquisition:
+        label: Patient Acquisition
+        tags:
+          - referral_building
+          - physician_relations
+          - direct_access
+          - community_outreach
+      digital_marketing:
+        label: Digital Marketing
+        tags:
+          - social_media
+          - website_seo
+          - online_reviews
+          - content_marketing
+      branding:
+        label: Branding
+        tags:
+          - practice_differentiation
+          - niche_positioning
+          - reputation_management
+
+  operations:
+    label: Operations
+    subdomains:
+      practice_management:
+        label: Practice Management
+        tags:
+          - scheduling_optimization
+          - patient_flow
+          - inventory_management
+          - facility_management
+      financial_management:
+        label: Financial Management
+        tags:
+          - revenue_cycle
+          - cash_flow
+          - budgeting
+          - profitability
+      quality_improvement:
+        label: Quality Improvement
+        tags:
+          - process_improvement
+          - patient_safety
+          - compliance_audits
+
+  staffing:
+    label: Staffing
+    subdomains:
+      hiring:
+        label: Hiring
+        tags:
+          - recruitment
+          - job_postings
+          - interview_process
+          - compensation_benchmarks
+      retention:
+        label: Retention
+        tags:
+          - employee_satisfaction
+          - benefits_packages
+          - career_development
+          - mentorship
+      workforce_planning:
+        label: Workforce Planning
+        tags:
+          - staffing_ratios
+          - productivity_standards
+          - pta_utilization
+          - travel_pt
+          - prn_staffing
+
+  legal_compliance:
+    label: Legal & Compliance
+    subdomains:
+      regulatory:
+        label: Regulatory
+        tags:
+          - state_practice_act
+          - direct_access_laws
+          - hipaa
+          - osha
+      business_legal:
+        label: Business Legal
+        tags:
+          - employment_law
+          - malpractice
+          - entity_structure
+          - non_compete
+      credentialing:
+        label: Credentialing
+        tags:
+          - provider_enrollment
+          - pecos
+          - caqh
+          - npi_management
+
+  documentation:
+    label: Documentation
+    subdomains:
+      clinical_documentation:
+        label: Clinical Documentation
+        tags:
+          - eval_documentation
+          - daily_notes
+          - progress_notes
+          - discharge_summaries
+      compliance_documentation:
+        label: Compliance Documentation
+        tags:
+          - medical_necessity
+          - audit_readiness
+          - documentation_standards
+
+  emr_tech:
+    label: EMR & Technology
+    subdomains:
+      emr_systems:
+        label: EMR Systems
+        tags:
+          - webpt
+          - clinicient
+          - net_health
+          - prompt
+          - system_comparison
+      practice_tech:
+        label: Practice Technology
+        tags:
+          - telehealth_platforms
+          - patient_portal
+          - scheduling_software
+          - billing_software
+          - exercise_apps
+
+  burnout:
+    label: Burnout & Wellness
+    subdomains:
+      burnout_signs:
+        label: Burnout Signs
+        tags:
+          - workload_stress
+          - documentation_burden
+          - productivity_pressure
+          - compassion_fatigue
+      wellness_strategies:
+        label: Wellness Strategies
+        tags:
+          - work_life_balance
+          - boundary_setting
+          - career_change
+          - self_care
+
+  negotiation:
+    label: Negotiation
+    subdomains:
+      payer_negotiation:
+        label: Payer Negotiation
+        tags:
+          - rate_increase
+          - contract_leverage
+          - outcomes_data
+          - collective_bargaining
+      salary_negotiation:
+        label: Salary Negotiation
+        tags:
+          - salary_benchmarks
+          - benefits_negotiation
+          - promotion_strategy
+
+  scaling:
+    label: Scaling & Growth
+    subdomains:
+      practice_ownership:
+        label: Practice Ownership
+        tags:
+          - startup_planning
+          - buying_practice
+          - partnership_models
+          - exit_strategy
+      expansion:
+        label: Expansion
+        tags:
+          - multi_location
+          - service_diversification
+          - cash_based_transition
+          - mobile_practice
+      business_models:
+        label: Business Models
+        tags:
+          - cash_pay
+          - hybrid_model
+          - concierge_pt
+          - wellness_programs
+
+  referrals:
+    label: Referrals
+    subdomains:
+      physician_referrals:
+        label: Physician Referrals
+        tags:
+          - md_relationships
+          - referral_tracking
+          - communication_strategies
+      patient_referrals:
+        label: Patient Referrals
+        tags:
+          - word_of_mouth
+          - referral_programs
+          - testimonials
+
+  contracting:
+    label: Contracting
+    subdomains:
+      payer_contracts:
+        label: Payer Contracts
+        tags:
+          - contract_review
+          - termination_clauses
+          - rate_structures
+          - network_participation
+      vendor_contracts:
+        label: Vendor Contracts
+        tags:
+          - emr_contracts
+          - lease_agreements
+          - service_agreements
